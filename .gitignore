@@ -4,6 +4,10 @@
 *.project
 *.launch
 *.xml
+*.bin
+*.dmp
+*.lst
+*.elf
 
 # Object files
 *.o
