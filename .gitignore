@@ -2,7 +2,6 @@
 *.d
 *.cproject
 *.project
-*.launch
 *.xml
 *.bin
 *.dmp
