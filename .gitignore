@@ -1,5 +1,9 @@
 # Prerequisites
 *.d
+*.cproject
+*.project
+*.launch
+*.xml
 
 # Object files
 *.o
