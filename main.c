@@ -66,9 +66,6 @@ int main(void)
     //inits the motors
     motors_init();
 
-    //temp tab used to store values in complex_float format
-    //needed bx doFFT_c
-    static complex_float temp_tab[FFT_SIZE];
     //send_tab is used to save the state of the buffer to send (double buffering)
     //to avoid modifications of the buffer while sending it
     static float send_tab[FFT_SIZE];
@@ -118,37 +115,6 @@ int main(void)
             /*
             *   End of optimized FFT
             */
-
-            /*
-            *   Non optimized FFT
-            */
-
-            // //need to convert the float buffer into complex_float struct array
-            // for(uint16_t i = 0 ; i < (2*FFT_SIZE) ; i+=2){
-            //     temp_tab[i/2].real = bufferCmplxInput[i];
-            //     temp_tab[i/2].imag = bufferCmplxInput[i+1];
-            // }
-
-            // chSysLock();
-            // //reset the timer counter
-            // GPTD12.tim->CNT = 0;
-
-            // //do a non optimized FFT
-            // doFFT_c(FFT_SIZE, temp_tab);
-
-            // time_fft = GPTD12.tim->CNT;
-            // chSysUnlock();
-            
-            // //reconverts the result into a float buffer
-            // for(uint16_t i = 0 ; i < (2*FFT_SIZE) ; i+=2){
-            //     bufferCmplxInput[i] = temp_tab[i/2].real;
-            //     bufferCmplxInput[i+1] = temp_tab[i/2].imag;
-            // }
-
-            /*
-            *   End of non optimized FFT
-            */
-
             chSysLock();
             //reset the timer counter
             GPTD12.tim->CNT = 0;
