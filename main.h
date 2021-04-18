@@ -9,6 +9,9 @@ extern "C" {
 #include "msgbus/messagebus.h"
 #include "parameter/parameter.h"
 
+//Constants definition
+#define GOAL_DISTANCE 			2.0f
+
 
 /** Robot wide IPC bus. */
 extern messagebus_t bus;
