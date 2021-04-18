@@ -5,6 +5,7 @@
 #include <chprintf.h>
 
 #include <motors.h>
+#include <mouvement.h>
 #include <audio/microphone.h>
 #include <audio_processing.h>
 #include <communications.h>
@@ -61,9 +62,7 @@ void sound_remote(float* data){
 
 	//go forward
 	if(max_norm_index >= FREQ_FORWARD_L && max_norm_index <= FREQ_FORWARD_H){
-		left_motor_set_speed(600);
-		right_motor_set_speed(600);
-		set_front_led(2);
+		mouvement_start();
 	}
 	//turn left
 	//else if(max_norm_index >= FREQ_LEFT_L && max_norm_index <= FREQ_LEFT_H){
