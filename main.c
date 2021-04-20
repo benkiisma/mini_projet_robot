@@ -10,11 +10,17 @@
 #include <chprintf.h>
 #include <motors.h>
 #include <audio/microphone.h>
+#include <sensors/proximity.h>
 
 #include <audio_processing.h>
 #include <fft.h>
 #include <communications.h>
 #include <arm_math.h>
+#include <detection.h>
+
+messagebus_t bus;
+MUTEX_DECL(bus_lock);
+CONDVAR_DECL(bus_condvar);
 
 //uncomment to send the FFTs results from the real microphones
 #define SEND_FROM_MIC
@@ -57,6 +63,8 @@ int main(void)
     chSysInit();
     mpu_init();
 
+    messagebus_init(&bus, &bus_lock, &bus_condvar);
+
     //starts the serial communication
     serial_start();
     //starts the USB communication
@@ -65,6 +73,10 @@ int main(void)
     timer12_start();
     //inits the motors
     motors_init();
+    //starts the proximity sensor
+    proximity_start();
+    //starts distance calcul
+    detection_start();
 
     //send_tab is used to save the state of the buffer to send (double buffering)
     //to avoid modifications of the buffer while sending it
@@ -124,7 +136,7 @@ int main(void)
             time_mag = GPTD12.tim->CNT;
             chSysUnlock();
 
-            SendFloatToComputer((BaseSequentialStream *) &SD3, bufferOutput, FFT_SIZE);
+            //SendFloatToComputer((BaseSequentialStream *) &SD3, bufferOutput, FFT_SIZE);
             //chprintf((BaseSequentialStream *) &SDU1, "time fft = %d us, time magnitude = %d us\n",time_fft, time_mag);
 
         }
