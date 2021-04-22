@@ -10,11 +10,13 @@
 #include <sensors/proximity.h>
 #include <chprintf.h>
 #include <usbcfg.h>
+#include <leds.h>
 
 #include "ch.h"
 #include "hal.h"
 #include "memory_protection.h"
 
+static int robot_state;
 
 static THD_WORKING_AREA(waDetection, 512);
 static THD_FUNCTION(Detection, arg) {
@@ -29,44 +31,37 @@ static THD_FUNCTION(Detection, arg) {
 
 	while(1){
 		time = chVTGetSystemTime();
-		//for (uint8_t i = 0; i < sizeof(prox_values.ambient)/sizeof(prox_values.ambient[0]); i++) {
-//		int valeur;
-//		for (uint8_t i = 0; i < PROXIMITY_NB_CHANNELS; i++) {
-//			valeur = get_calibrated_prox(i);
-//			chprintf((BaseSequentialStream *)&SDU1, "%4d,", valeur);
-//		}
 
 		messagebus_topic_wait(prox_topic, &prox_values, sizeof(prox_values));
 
-		for (uint8_t i = 0; i < sizeof(prox_values.ambient)/sizeof(prox_values.ambient[0]); i++) {
-				        //for (uint8_t i = 0; i < PROXIMITY_NB_CHANNELS; i++) {
-				        	chprintf((BaseSequentialStream *)&SD3, "%4d,", prox_values.ambient[i]);
-				        	chprintf((BaseSequentialStream *)&SD3, "%4d,", prox_values.reflected[i]);
-				        	chprintf((BaseSequentialStream *)&SD3, "%4d", prox_values.delta[i]);
-				        	chprintf((BaseSequentialStream *)&SD3, "\r\n");
-				        }
-				        chprintf((BaseSequentialStream *)&SD3, "\r\n");
-
 		chThdSleepUntilWindowed(time, time + MS2ST(100)); // Refresh @ 10 Hz
+
+		//on modifie le robot_state pour que le robot choisisse la direction à prendre
+		if(get_calibrated_prox(0) < 300 && get_calibrated_prox(7) < 300){
+			robot_state = 0;
+		}
+		else if(get_calibrated_prox(0) > 300 && get_calibrated_prox(7) > 300){
+			if(get_calibrated_prox(2) > 300){
+				set_front_led(2);
+				robot_state = 1;
+			}
+			else if(get_calibrated_prox(5) > 300){
+				robot_state = 2;
+			}
+			else if(get_calibrated_prox(2) > 300 && get_calibrated_prox(5) > 300){
+				robot_state = 3;
+			}
+			else{
+				robot_state = 4;
+				set_body_led(2);
+			}
+		}
 	}
 }
-	//on regarde les capteurs de devant et sur les côté --> trouver les numéros associés
-//	if(){
-//		switch(robot_state){
-//			case 0:
-//				//pas d'obstacle --> avance tout droit
-//				break;
-//			case 1:
-//				//obstacle devant, pas à gauche --> tourne à gauche --> case 0
-//				break;
-//			case 2:
-//				//obstacle devant, pas à droite --> tourne à droite --> case 0
-//				break;
-//			case 3:
-//				//bloqué de partout, demi-tour
-//				break;
-//		}
-//	}
+
+int get_robot_state(void){
+	return robot_state;
+}
 
 void detection_start(void){
 	chThdCreateStatic(waDetection, sizeof(waDetection), NORMALPRIO, Detection, NULL);
