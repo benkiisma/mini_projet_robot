@@ -60,8 +60,6 @@ void sound_remote(float* data){
 		}
 	}
 
-	mouvement_start();
-
 	//arrete le robot si on est plus haut qu'une certaine frequence
 //	if(max_norm_index >= FREQ_FORWARD){
 //		left_motor_set_speed(0);

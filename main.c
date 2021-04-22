@@ -17,6 +17,7 @@
 #include <communications.h>
 #include <arm_math.h>
 #include <detection.h>
+#include <mouvement.h>
 
 messagebus_t bus;
 MUTEX_DECL(bus_lock);
@@ -77,7 +78,8 @@ int main(void)
     proximity_start();
     //starts distance calcul
     detection_start();
-
+    // starts le mouvement du robot en fonctionnement de ce qui l'entoure
+    mouvement_start();
     //send_tab is used to save the state of the buffer to send (double buffering)
     //to avoid modifications of the buffer while sending it
     static float send_tab[FFT_SIZE];
