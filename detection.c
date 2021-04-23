@@ -42,7 +42,6 @@ static THD_FUNCTION(Detection, arg) {
 		}
 		else if(get_calibrated_prox(0) > 300 && get_calibrated_prox(7) > 300){
 			if(get_calibrated_prox(2) > 300){
-				set_front_led(2);
 				robot_state = 1;
 			}
 			else if(get_calibrated_prox(5) > 300){
@@ -53,7 +52,6 @@ static THD_FUNCTION(Detection, arg) {
 			}
 			else{
 				robot_state = 4;
-				set_body_led(2);
 			}
 		}
 	}
@@ -61,6 +59,10 @@ static THD_FUNCTION(Detection, arg) {
 
 int get_robot_state(void){
 	return robot_state;
+}
+
+void stop_robot(void){
+	robot_state = 4;
 }
 
 void detection_start(void){

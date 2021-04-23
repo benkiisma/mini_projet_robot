@@ -11,6 +11,8 @@
 #include <communications.h>
 #include <fft.h>
 #include <arm_math.h>
+#include <leds.h>
+#include <detection.h>
 
 //semaphore
 static BSEMAPHORE_DECL(sendToComputer_sem, TRUE);
@@ -26,12 +28,14 @@ static float micRight_output[FFT_SIZE];
 static float micFront_output[FFT_SIZE];
 static float micBack_output[FFT_SIZE];
 
+static int stop;
+
 #define MIN_VALUE_THRESHOLD	10000 
 
 #define MIN_FREQ		35	//we don't analyze before this index to not use resources for nothing
 #define FREQ_FORWARD	45	//700Hz
 //#define FREQ_LEFT		19	//296Hz
-//#define FREQ_RIGHT		23	//359HZ
+//#define FREQ_RIGHT	23	//359HZ
 //#define FREQ_BACKWARD	26	//406Hz
 #define MAX_FREQ		55	//we don't analyze after this index to not use resources for nothing
 
@@ -43,6 +47,30 @@ static float micBack_output[FFT_SIZE];
 //#define FREQ_RIGHT_H		(FREQ_RIGHT+1)
 //#define FREQ_BACKWARD_L		(FREQ_BACKWARD-1)
 //#define FREQ_BACKWARD_H		(FREQ_BACKWARD+1)
+
+static THD_WORKING_AREA(waAudio, 256);
+static THD_FUNCTION(Audio, arg) {
+
+	chRegSetThreadName(__FUNCTION__);
+	(void)arg;
+
+    //send_tab is used to save the state of the buffer to send (double buffering)
+    //to avoid modifications of the buffer while sending it
+    static float send_tab[FFT_SIZE];
+    //starts the microphones processing thread.
+    //it calls the callback given in parameter when samples are ready
+    mic_start(&processAudioData);
+
+	while(1){
+		//waits until a result must be sent to the computer
+        wait_send_to_computer();
+        arm_copy_f32(get_audio_buffer_ptr(LEFT_OUTPUT), send_tab, FFT_SIZE);
+        if(stop){
+        	stop_robot();
+        	set_body_led(2);
+        }
+	}
+}
 
 /*
 *	Simple function used to detect the highest value in a buffer
@@ -60,11 +88,13 @@ void sound_remote(float* data){
 		}
 	}
 
-	//arrete le robot si on est plus haut qu'une certaine frequence
-//	if(max_norm_index >= FREQ_FORWARD){
-//		left_motor_set_speed(0);
-//		right_motor_set_speed(0);
-//	}
+//	//arrete le robot si on est plus haut qu'une certaine frequence
+	if(max_norm_index >= FREQ_FORWARD_L && max_norm_index <= FREQ_FORWARD_H ){
+		stop = 1;
+	}
+	else{
+		stop = 0;
+	}
 }
 
 /*
@@ -182,4 +212,8 @@ float* get_audio_buffer_ptr(BUFFER_NAME_t name){
 	else{
 		return NULL;
 	}
+}
+
+void audio_start(void){
+	chThdCreateStatic(waAudio, sizeof(waAudio), NORMALPRIO, Audio, NULL);
 }

@@ -13,5 +13,7 @@ void detection_start(void);
 
 int get_robot_state(void);
 
+void stop_robot(void);
+
 
 #endif /* DETECTION_H_ */

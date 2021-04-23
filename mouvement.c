@@ -44,6 +44,7 @@ static THD_FUNCTION(Mouvement, arg) {
 			}
 	}
 }
+
 void mouvement_start(void){
 	chThdCreateStatic(waMouvement, sizeof(waMouvement), NORMALPRIO, Mouvement, NULL);
 }
