@@ -214,6 +214,10 @@ float* get_audio_buffer_ptr(BUFFER_NAME_t name){
 	}
 }
 
+int get_stop(void){
+	return stop;
+}
+
 void audio_start(void){
 	chThdCreateStatic(waAudio, sizeof(waAudio), NORMALPRIO, Audio, NULL);
 }

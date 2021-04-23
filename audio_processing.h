@@ -30,6 +30,8 @@ void wait_send_to_computer(void);
 */
 float* get_audio_buffer_ptr(BUFFER_NAME_t name);
 
+int get_stop(void);
+
 void audio_start(void);
 
 #endif /* AUDIO_PROCESSING_H */
