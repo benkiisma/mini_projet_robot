@@ -11,11 +11,11 @@
 #include <motors.h>
 #include <audio/microphone.h>
 #include <sensors/proximity.h>
+//#include <arm_math.h>
 
 #include <audio_processing.h>
 #include <fft.h>
 #include <communications.h>
-//#include <arm_math.h>
 #include <detection.h>
 #include <mouvement.h>
 
@@ -23,11 +23,11 @@ messagebus_t bus;
 MUTEX_DECL(bus_lock);
 CONDVAR_DECL(bus_condvar);
 
-//uncomment to send the FFTs results from the real microphones
+
 #define SEND_FROM_MIC
 
 //uncomment to use double buffering to send the FFT to the computer
-#define DOUBLE_BUFFERING
+//#define DOUBLE_BUFFERING
 
 static void serial_start(void)
 {
@@ -39,22 +39,6 @@ static void serial_start(void)
 	};
 
 	sdStart(&SD3, &ser_cfg); // UART3.
-}
-
-static void timer12_start(void){
-    //General Purpose Timer configuration   
-    //timer 12 is a 16 bit timer so we can measure time
-    //to about 65ms with a 1Mhz counter
-    static const GPTConfig gpt12cfg = {
-        1000000,        /* 1MHz timer clock in order to measure uS.*/
-        NULL,           /* Timer callback.*/
-        0,
-        0
-    };
-
-    gptStart(&GPTD12, &gpt12cfg);
-    //let the timer count to max value
-    gptStartContinuous(&GPTD12, 0xFFFF);
 }
 
 int main(void)
@@ -70,17 +54,15 @@ int main(void)
     serial_start();
     //starts the USB communication
     usb_start();
-    //starts timer 12
-    timer12_start();
     //inits the motors
     motors_init();
     //starts the proximity sensor
     proximity_start();
-    //starts distance calcul
+    //starts the detection of obstacles
     detection_start();
-    // starts le mouvement du robot en fonctionnement de ce qui l'entoure
+    // starts the movement of the robot
     mouvement_start();
-
+    // starts the detection of the sound
     audio_start();
 
     /* Infinite loop. */

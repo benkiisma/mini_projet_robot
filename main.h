@@ -10,7 +10,7 @@ extern "C" {
 #include "parameter/parameter.h"
 
 //Constants definition
-#define GOAL_DISTANCE 			2.0f
+//#define GOAL_DISTANCE 			2.0f
 
 
 /** Robot wide IPC bus. */
