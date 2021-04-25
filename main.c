@@ -15,7 +15,7 @@
 #include <audio_processing.h>
 #include <fft.h>
 #include <communications.h>
-#include <arm_math.h>
+//#include <arm_math.h>
 #include <detection.h>
 #include <mouvement.h>
 
