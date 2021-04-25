@@ -5,13 +5,14 @@
 #include <chprintf.h>
 
 #include <motors.h>
-#include <mouvement.h>
 #include <audio/microphone.h>
 #include <audio_processing.h>
-#include <communications.h>
-#include <fft.h>
 #include <arm_math.h>
 #include <leds.h>
+
+#include <mouvement.h>
+#include <communications.h>
+#include <fft.h>
 #include <detection.h>
 
 //semaphore
@@ -88,7 +89,7 @@ void sound_remote(float* data){
 		}
 	}
 
-//	//arrete le robot si on est plus haut qu'une certaine frequence
+	// Stops the robot if it detect a certain frequency
 	if(max_norm_index >= FREQ_FORWARD_L && max_norm_index <= FREQ_FORWARD_H ){
 		stop = 1;
 	}
