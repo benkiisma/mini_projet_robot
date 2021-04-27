@@ -57,15 +57,16 @@ static THD_FUNCTION(Audio, arg) {
 
     //send_tab is used to save the state of the buffer to send (double buffering)
     //to avoid modifications of the buffer while sending it
-    static float send_tab[FFT_SIZE];
+    //static float send_tab[FFT_SIZE];
     //starts the microphones processing thread.
     //it calls the callback given in parameter when samples are ready
     mic_start(&processAudioData);
 
 	while(1){
 		//waits until a result must be sent to the computer
-        wait_send_to_computer();
-        arm_copy_f32(get_audio_buffer_ptr(LEFT_OUTPUT), send_tab, FFT_SIZE);
+        //wait_send_to_computer();
+		chThdSleepMilliseconds(50);
+        //arm_copy_f32(get_audio_buffer_ptr(LEFT_OUTPUT), send_tab, FFT_SIZE);
         if(stop){
         	stop_robot();
         	set_body_led(2);

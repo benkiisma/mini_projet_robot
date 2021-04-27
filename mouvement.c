@@ -26,16 +26,19 @@ static THD_FUNCTION(Mouvement, arg) {
 				//obstacle devant, pas à gauche --> tourne à gauche --> case 0
 				left_motor_set_speed(-600);
 				right_motor_set_speed(600);
+				chThdSleepMilliseconds(525);
 				break;
 			case 2:
 				//obstacle devant, pas à droite --> tourne à droite --> case 0
 				left_motor_set_speed(600);
 				right_motor_set_speed(-600);
+				chThdSleepMilliseconds(525);
 				break;
 			case 3:
 				//bloqué de partout, demi-tour 2 fois le temps d'un virage
 				left_motor_set_speed(600);
 				right_motor_set_speed(-600);
+				chThdSleepMilliseconds(1050);
 				break;
 			case 4:
 				left_motor_set_speed(0);
