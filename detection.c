@@ -41,13 +41,13 @@ static THD_FUNCTION(Detection, arg) {
 				robot_state = 0;
 			}
 			else if(get_calibrated_prox(0) > 300 && get_calibrated_prox(7) > 300){
-				if(get_calibrated_prox(2) > 300 && get_calibrated_prox(5) < 300){
+				if(get_calibrated_prox(2) > 200 && get_calibrated_prox(5) < 200){
 					robot_state = 1;
 				}
-				else if(get_calibrated_prox(5) > 300 && get_calibrated_prox(2) < 300){
+				else if(get_calibrated_prox(5) > 200 && get_calibrated_prox(2) < 200){
 					robot_state = 2;
 				}
-				else if(get_calibrated_prox(2) > 300 && get_calibrated_prox(5) > 300){
+				else if(get_calibrated_prox(2) > 200 && get_calibrated_prox(5) > 200){
 					robot_state = 3;
 				}
 				else{
@@ -58,6 +58,10 @@ static THD_FUNCTION(Detection, arg) {
 		chThdSleepUntilWindowed(time, time + MS2ST(10)); // Refresh @ 100 Hz
 	}
 }
+
+//int16_t get_distance_side(void){
+//	return distance_side;
+//}
 
 int get_robot_state(void){
 	return robot_state;
