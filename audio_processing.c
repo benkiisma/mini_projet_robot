@@ -55,6 +55,7 @@ static THD_FUNCTION(Audio, arg) {
 	chRegSetThreadName(__FUNCTION__);
 	(void)arg;
 
+	systime_t time;
     //send_tab is used to save the state of the buffer to send (double buffering)
     //to avoid modifications of the buffer while sending it
     //static float send_tab[FFT_SIZE];
@@ -63,14 +64,17 @@ static THD_FUNCTION(Audio, arg) {
     mic_start(&processAudioData);
 
 	while(1){
+
+		time = chVTGetSystemTime();
 		//waits until a result must be sent to the computer
         //wait_send_to_computer();
-		chThdSleepMilliseconds(50);
         //arm_copy_f32(get_audio_buffer_ptr(LEFT_OUTPUT), send_tab, FFT_SIZE);
         if(stop){
         	stop_robot();
         	set_body_led(2);
         }
+        //200Hz
+        chThdSleepUntilWindowed(time, time + MS2ST(5));
 	}
 }
 
@@ -221,5 +225,5 @@ int get_stop(void){
 }
 
 void audio_start(void){
-	chThdCreateStatic(waAudio, sizeof(waAudio), NORMALPRIO, Audio, NULL);
+	chThdCreateStatic(waAudio, sizeof(waAudio), NORMALPRIO+2, Audio, NULL);
 }

@@ -12,8 +12,7 @@ extern "C" {
 //Constants definition
 //#define GOAL_DISTANCE_SIDE			200
 #define ERROR_THRESHOLD				50
-#define KP							600.0f
-#define KI 							3.5f	//must not be zero
+#define KP							0.2f
 #define MAX_SUM_ERROR 				(MOTOR_SPEED_LIMIT/KI)
 
 

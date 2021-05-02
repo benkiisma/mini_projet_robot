@@ -5,6 +5,8 @@
  *      Author: Nicolas
  */
 #include <main.h>
+#include "ch.h"
+#include "hal.h"
 
 #include <motors.h>
 #include <mouvement.h>
@@ -22,28 +24,34 @@ static THD_FUNCTION(Mouvement, arg) {
 	chRegSetThreadName(__FUNCTION__);
 	(void)arg;
 
+	systime_t time;
+
 	while(1){
 
-		//Calcul distance of the proximity sensor on right side or left side
-//		if(get_calibrated_prox(2) < 200){
-			distance_side = get_calibrated_prox(2);
-//		}
-//		else if(get_calibrated_prox(5) > 200){
-//			distance_side = get_calibrated_prox(5);
-//		}
+		time = chVTGetSystemTime();
 
 		switch(get_robot_state()){
 			case 0:
-				goal_distance = (get_calibrated_prox(2) + get_calibrated_prox(5))/2;
-				if(get_calibrated_prox(2) == get_calibrated_prox(5)){
-					speed_correction = 0;
-				}
-				else{
-					speed_correction = pi_regulator(distance_side, goal_distance);
+				//Calcul distance of the proximity sensor on right side or left side
+				distance_side = get_calibrated_prox(2);
+				if(get_calibrated_prox(2) < 150){
+					distance_side = get_calibrated_prox(5);
 				}
 
-				left_motor_set_speed(600 - speed_correction);
-				right_motor_set_speed(600 + speed_correction);
+				if(get_calibrated_prox(2) > 125 && get_calibrated_prox(5) > 125){
+					goal_distance = (get_calibrated_prox(2) + get_calibrated_prox(5))/2;
+					speed_correction = pi_regulator(distance_side, goal_distance);
+				}else{
+					speed_correction = 0;
+				}
+				if(distance_side == get_calibrated_prox(2)){
+					left_motor_set_speed(600 - speed_correction);
+					right_motor_set_speed(600 + speed_correction);
+				}
+				else{
+					left_motor_set_speed(600 + speed_correction);
+					right_motor_set_speed(600 - speed_correction);
+				}
 				break;
 			case 1:
 				//obstacle devant, pas à gauche --> tourne à gauche --> case 0
@@ -69,6 +77,8 @@ static THD_FUNCTION(Mouvement, arg) {
 				break;
 			}
 	}
+	//100Hz
+	chThdSleepUntilWindowed(time, time + MS2ST(10));
 }
 
 //simple PI regulator implementation
@@ -77,27 +87,16 @@ int16_t pi_regulator(int16_t distance, int16_t goal){
 	int16_t error = 0;
 	int16_t speed = 0;
 
-	static int16_t sum_error = 0;
-
 	error = distance - goal;
 
 	//disables the PI regulator if the error is to small
-	//this avoids to always move as we cannot exactly be where we want and
-	//the camera is a bit noisy
+	//this avoids to always move as we cannot exactly be where we want
 	if(abs(error) < ERROR_THRESHOLD){
+		set_front_led(2);
 		return 0;
 	}
 
-	sum_error += error;
-
-	//we set a maximum and a minimum for the sum to avoid an uncontrolled growth
-	if(sum_error > MAX_SUM_ERROR){
-		sum_error = MAX_SUM_ERROR;
-	}else if(sum_error < -MAX_SUM_ERROR){
-		sum_error = -MAX_SUM_ERROR;
-	}
-
-	speed = KP * error + KI * sum_error;
+	speed = KP * error;
 
     return (int16_t)speed;
 }
