@@ -1,16 +1,23 @@
+/*
+ * audio_processing.c
+ *
+ *  Created on: 18 avr. 2021
+ *  We used a part of the TP5 code for sound analysis
+ *      Author: Nicolas & Ismail
+ */
+
 #include "ch.h"
 #include "hal.h"
 #include <main.h>
-#include <usbcfg.h>
-#include <chprintf.h>
+//#include <usbcfg.h>
 
-#include <motors.h>
+//#include <motors.h>
 #include <audio/microphone.h>
 #include <audio_processing.h>
 #include <arm_math.h>
 #include <leds.h>
 
-#include <mouvement.h>
+//#include <mouvement.h>
 #include <communications.h>
 #include <fft.h>
 #include <detection.h>
@@ -155,10 +162,10 @@ void processAudioData(int16_t *data, uint16_t num_samples){
 		*	This is an "In Place" function. 
 		*/
 
-		doFFT_optimized(FFT_SIZE, micRight_cmplx_input);
-		doFFT_optimized(FFT_SIZE, micLeft_cmplx_input);
-		doFFT_optimized(FFT_SIZE, micFront_cmplx_input);
-		doFFT_optimized(FFT_SIZE, micBack_cmplx_input);
+		FFT_optimized(FFT_SIZE, micRight_cmplx_input);
+		FFT_optimized(FFT_SIZE, micLeft_cmplx_input);
+		FFT_optimized(FFT_SIZE, micFront_cmplx_input);
+		FFT_optimized(FFT_SIZE, micBack_cmplx_input);
 
 		/*	Magnitude processing
 		*
@@ -186,39 +193,39 @@ void processAudioData(int16_t *data, uint16_t num_samples){
 	}
 }
 
-void wait_send_to_computer(void){
-	chBSemWait(&sendToComputer_sem);
-}
+//void wait_send_to_computer(void){
+//	chBSemWait(&sendToComputer_sem);
+//}
 
-float* get_audio_buffer_ptr(BUFFER_NAME_t name){
-	if(name == LEFT_CMPLX_INPUT){
-		return micLeft_cmplx_input;
-	}
-	else if (name == RIGHT_CMPLX_INPUT){
-		return micRight_cmplx_input;
-	}
-	else if (name == FRONT_CMPLX_INPUT){
-		return micFront_cmplx_input;
-	}
-	else if (name == BACK_CMPLX_INPUT){
-		return micBack_cmplx_input;
-	}
-	else if (name == LEFT_OUTPUT){
-		return micLeft_output;
-	}
-	else if (name == RIGHT_OUTPUT){
-		return micRight_output;
-	}
-	else if (name == FRONT_OUTPUT){
-		return micFront_output;
-	}
-	else if (name == BACK_OUTPUT){
-		return micBack_output;
-	}
-	else{
-		return NULL;
-	}
-}
+//float* get_audio_buffer_ptr(BUFFER_NAME_t name){
+//	if(name == LEFT_CMPLX_INPUT){
+//		return micLeft_cmplx_input;
+//	}
+//	else if (name == RIGHT_CMPLX_INPUT){
+//		return micRight_cmplx_input;
+//	}
+//	else if (name == FRONT_CMPLX_INPUT){
+//		return micFront_cmplx_input;
+//	}
+//	else if (name == BACK_CMPLX_INPUT){
+//		return micBack_cmplx_input;
+//	}
+//	else if (name == LEFT_OUTPUT){
+//		return micLeft_output;
+//	}
+//	else if (name == RIGHT_OUTPUT){
+//		return micRight_output;
+//	}
+//	else if (name == FRONT_OUTPUT){
+//		return micFront_output;
+//	}
+//	else if (name == BACK_OUTPUT){
+//		return micBack_output;
+//	}
+//	else{
+//		return NULL;
+//	}
+//}
 
 int get_stop(void){
 	return stop;

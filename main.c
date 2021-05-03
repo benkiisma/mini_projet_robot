@@ -1,3 +1,10 @@
+/*
+ * main.c
+ *
+ *  Created on: 18 avr. 2021S
+ *      Author: Nicolas & Ismail
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,13 +13,13 @@
 #include "hal.h"
 #include "memory_protection.h"
 #include <usbcfg.h>
-#include <main.h>
-#include <chprintf.h>
+//#include <chprintf.h>
 #include <motors.h>
-#include <audio/microphone.h>
+//#include <audio/microphone.h>
 #include <sensors/proximity.h>
-//#include <arm_math.h>
+#include <arm_math.h>
 
+#include <main.h>
 #include <audio_processing.h>
 #include <fft.h>
 #include <communications.h>
