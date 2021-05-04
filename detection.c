@@ -9,7 +9,6 @@
 
 #include <detection.h>
 #include <sensors/proximity.h>
-//#include <usbcfg.h>
 #include <leds.h>
 #include <audio_processing.h>
 
@@ -25,15 +24,10 @@ static THD_FUNCTION(Detection, arg) {
 	chRegSetThreadName(__FUNCTION__);
 	(void)arg;
 
-	messagebus_topic_t *prox_topic = messagebus_find_topic_blocking(&bus, "/proximity");
-	proximity_msg_t prox_values;
-
 	systime_t time;
 
 	while(1){
 		time = chVTGetSystemTime();
-
-		messagebus_topic_wait(prox_topic, &prox_values, sizeof(prox_values));
 
 		//Changing the state of the robot depending on the sensor values
 		if(!get_stop()){

@@ -16,7 +16,7 @@
 #include <sensors/proximity.h>
 
 //Constants definition
-#define ERROR_THRESHOLD				50
+#define ERROR_THRESHOLD				10
 #define KP							0.2f
 #define MAX_SUM_ERROR 				(MOTOR_SPEED_LIMIT/KI)
 #define MOTOR_SPEED					600
@@ -81,7 +81,6 @@ void mouvement_start(void){
 void path_correction(void){
 	int16_t distance_side;
 	int16_t speed_correction;
-	//int16_t goal_distance; ecrire directement la valeur dans les parametres de la fonction ??
 
 	distance_side = get_calibrated_prox(2);
 
@@ -91,7 +90,6 @@ void path_correction(void){
 
 	//determining the necessary correction
 	if(get_calibrated_prox(2) > DETECT_DIST && get_calibrated_prox(5) > DETECT_DIST){
-		//goal_distance = (get_calibrated_prox(2) + get_calibrated_prox(5))/2;
 		speed_correction = p_regulator(distance_side, (get_calibrated_prox(2) + get_calibrated_prox(5))/2);
 	}else{
 		speed_correction = 0;
@@ -111,19 +109,19 @@ void path_correction(void){
 void turn_right(void){
 	left_motor_set_speed(MOTOR_SPEED);
 	right_motor_set_speed(-MOTOR_SPEED);
-	chThdSleepMilliseconds(520);
+	chThdSleepMilliseconds(517);
 }
 
 void turn_left(void){
 	left_motor_set_speed(-MOTOR_SPEED);
 	right_motor_set_speed(MOTOR_SPEED);
-	chThdSleepMilliseconds(520);
+	chThdSleepMilliseconds(517);
 }
 
 void turn_back(void){
 	left_motor_set_speed(MOTOR_SPEED);
 	right_motor_set_speed(-MOTOR_SPEED);
-	chThdSleepMilliseconds(1040);
+	chThdSleepMilliseconds(1034);
 }
 
 void stop_moving(void){

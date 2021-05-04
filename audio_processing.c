@@ -9,32 +9,24 @@
 #include "ch.h"
 #include "hal.h"
 #include <main.h>
-//#include <usbcfg.h>
 
-//#include <motors.h>
 #include <audio/microphone.h>
 #include <audio_processing.h>
 #include <arm_math.h>
 #include <leds.h>
 
-//#include <mouvement.h>
-#include <communications.h>
+//#include <communications.h>
 #include <fft.h>
 #include <detection.h>
 
 //semaphore
-static BSEMAPHORE_DECL(sendToComputer_sem, TRUE);
+//static BSEMAPHORE_DECL(sendToComputer_sem, TRUE);
 
 //2 times FFT_SIZE because these arrays contain complex numbers (real + imaginary)
 static float micLeft_cmplx_input[2 * FFT_SIZE];
-static float micRight_cmplx_input[2 * FFT_SIZE];
-static float micFront_cmplx_input[2 * FFT_SIZE];
-static float micBack_cmplx_input[2 * FFT_SIZE];
+
 //Arrays containing the computed magnitude of the complex numbers
 static float micLeft_output[FFT_SIZE];
-static float micRight_output[FFT_SIZE];
-static float micFront_output[FFT_SIZE];
-static float micBack_output[FFT_SIZE];
 
 static int stop;
 
@@ -42,19 +34,10 @@ static int stop;
 
 #define MIN_FREQ		35	//we don't analyze before this index to not use resources for nothing
 #define FREQ_FORWARD	45	//700Hz
-//#define FREQ_LEFT		19	//296Hz
-//#define FREQ_RIGHT	23	//359HZ
-//#define FREQ_BACKWARD	26	//406Hz
 #define MAX_FREQ		55	//we don't analyze after this index to not use resources for nothing
 
 #define FREQ_FORWARD_L		(FREQ_FORWARD-1)
 #define FREQ_FORWARD_H		(FREQ_FORWARD+1)
-//#define FREQ_LEFT_L			(FREQ_LEFT-1)
-//#define FREQ_LEFT_H			(FREQ_LEFT+1)
-//#define FREQ_RIGHT_L		(FREQ_RIGHT-1)
-//#define FREQ_RIGHT_H		(FREQ_RIGHT+1)
-//#define FREQ_BACKWARD_L		(FREQ_BACKWARD-1)
-//#define FREQ_BACKWARD_H		(FREQ_BACKWARD+1)
 
 static THD_WORKING_AREA(waAudio, 256);
 static THD_FUNCTION(Audio, arg) {
@@ -63,9 +46,7 @@ static THD_FUNCTION(Audio, arg) {
 	(void)arg;
 
 	systime_t time;
-    //send_tab is used to save the state of the buffer to send (double buffering)
-    //to avoid modifications of the buffer while sending it
-    //static float send_tab[FFT_SIZE];
+
     //starts the microphones processing thread.
     //it calls the callback given in parameter when samples are ready
     mic_start(&processAudioData);
@@ -73,9 +54,7 @@ static THD_FUNCTION(Audio, arg) {
 	while(1){
 
 		time = chVTGetSystemTime();
-		//waits until a result must be sent to the computer
-        //wait_send_to_computer();
-        //arm_copy_f32(get_audio_buffer_ptr(LEFT_OUTPUT), send_tab, FFT_SIZE);
+
         if(stop){
         	stop_robot();
         	set_body_led(2);
@@ -130,22 +109,15 @@ void processAudioData(int16_t *data, uint16_t num_samples){
 	*/
 
 	static uint16_t nb_samples = 0;
-	static uint8_t mustSend = 0;
 
 	//loop to fill the buffers
 	for(uint16_t i = 0 ; i < num_samples ; i+=4){
 		//construct an array of complex numbers. Put 0 to the imaginary part
-		micRight_cmplx_input[nb_samples] = (float)data[i + MIC_RIGHT];
 		micLeft_cmplx_input[nb_samples] = (float)data[i + MIC_LEFT];
-		micBack_cmplx_input[nb_samples] = (float)data[i + MIC_BACK];
-		micFront_cmplx_input[nb_samples] = (float)data[i + MIC_FRONT];
 
 		nb_samples++;
 
-		micRight_cmplx_input[nb_samples] = 0;
 		micLeft_cmplx_input[nb_samples] = 0;
-		micBack_cmplx_input[nb_samples] = 0;
-		micFront_cmplx_input[nb_samples] = 0;
 
 		nb_samples++;
 
@@ -162,10 +134,7 @@ void processAudioData(int16_t *data, uint16_t num_samples){
 		*	This is an "In Place" function. 
 		*/
 
-		FFT_optimized(FFT_SIZE, micRight_cmplx_input);
 		FFT_optimized(FFT_SIZE, micLeft_cmplx_input);
-		FFT_optimized(FFT_SIZE, micFront_cmplx_input);
-		FFT_optimized(FFT_SIZE, micBack_cmplx_input);
 
 		/*	Magnitude processing
 		*
@@ -174,58 +143,13 @@ void processAudioData(int16_t *data, uint16_t num_samples){
 		*	real numbers.
 		*
 		*/
-		arm_cmplx_mag_f32(micRight_cmplx_input, micRight_output, FFT_SIZE);
 		arm_cmplx_mag_f32(micLeft_cmplx_input, micLeft_output, FFT_SIZE);
-		arm_cmplx_mag_f32(micFront_cmplx_input, micFront_output, FFT_SIZE);
-		arm_cmplx_mag_f32(micBack_cmplx_input, micBack_output, FFT_SIZE);
 
-		//sends only one FFT result over 10 for 1 mic to not flood the computer
-		//sends to UART3
-		if(mustSend > 8){
-			//signals to send the result to the computer
-			chBSemSignal(&sendToComputer_sem);
-			mustSend = 0;
-		}
 		nb_samples = 0;
-		mustSend++;
 
 		sound_remote(micLeft_output);
 	}
 }
-
-//void wait_send_to_computer(void){
-//	chBSemWait(&sendToComputer_sem);
-//}
-
-//float* get_audio_buffer_ptr(BUFFER_NAME_t name){
-//	if(name == LEFT_CMPLX_INPUT){
-//		return micLeft_cmplx_input;
-//	}
-//	else if (name == RIGHT_CMPLX_INPUT){
-//		return micRight_cmplx_input;
-//	}
-//	else if (name == FRONT_CMPLX_INPUT){
-//		return micFront_cmplx_input;
-//	}
-//	else if (name == BACK_CMPLX_INPUT){
-//		return micBack_cmplx_input;
-//	}
-//	else if (name == LEFT_OUTPUT){
-//		return micLeft_output;
-//	}
-//	else if (name == RIGHT_OUTPUT){
-//		return micRight_output;
-//	}
-//	else if (name == FRONT_OUTPUT){
-//		return micFront_output;
-//	}
-//	else if (name == BACK_OUTPUT){
-//		return micBack_output;
-//	}
-//	else{
-//		return NULL;
-//	}
-//}
 
 int get_stop(void){
 	return stop;

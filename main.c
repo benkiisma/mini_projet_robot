@@ -13,40 +13,20 @@
 #include "hal.h"
 #include "memory_protection.h"
 #include <usbcfg.h>
-//#include <chprintf.h>
 #include <motors.h>
-//#include <audio/microphone.h>
+#include <audio/microphone.h>
 #include <sensors/proximity.h>
 #include <arm_math.h>
 
 #include <main.h>
 #include <audio_processing.h>
 #include <fft.h>
-#include <communications.h>
 #include <detection.h>
 #include <mouvement.h>
 
 messagebus_t bus;
 MUTEX_DECL(bus_lock);
 CONDVAR_DECL(bus_condvar);
-
-
-#define SEND_FROM_MIC
-
-//uncomment to use double buffering to send the FFT to the computer
-//#define DOUBLE_BUFFERING
-
-static void serial_start(void)
-{
-	static SerialConfig ser_cfg = {
-	    115200,
-	    0,
-	    0,
-	    0,
-	};
-
-	sdStart(&SD3, &ser_cfg); // UART3.
-}
 
 int main(void)
 {
@@ -57,8 +37,6 @@ int main(void)
 
     messagebus_init(&bus, &bus_lock, &bus_condvar);
 
-    //starts the serial communication
-    serial_start();
     //starts the USB communication
     usb_start();
     //inits the motors
