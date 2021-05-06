@@ -57,7 +57,7 @@ static THD_FUNCTION(Audio, arg) {
 
         if(stop){
         	stop_robot();
-        	set_body_led(2);
+        	//set_body_led(2);
         }
         //200Hz
         chThdSleepUntilWindowed(time, time + MS2ST(5));
