@@ -5,12 +5,14 @@
  *      Author: Nicolas & Ismail
  */
 
-#ifndef MOUVEMENT_H_
-#define MOUVEMENT_H_
+#ifndef MOVEMENT_H_
+#define MOVEMENT_H_
 
 int16_t p_regulator(int16_t distance, int16_t goal);
 
-void mouvement_start(void);
+void read_and_move(void);
+
+//void mouvement_start(void);
 void path_correction(void);
 
 void turn_right(void);
@@ -20,4 +22,4 @@ void stop_moving(void);
 
 
 
-#endif /* MOUVEMENT_H_ */
+#endif /* MOVEMENT_H_ */

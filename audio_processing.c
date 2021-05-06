@@ -15,12 +15,11 @@
 #include <arm_math.h>
 #include <leds.h>
 
-//#include <communications.h>
+#include <usbcfg.h>
+#include <chprintf.h>
+
 #include <fft.h>
 #include <detection.h>
-
-//semaphore
-//static BSEMAPHORE_DECL(sendToComputer_sem, TRUE);
 
 //2 times FFT_SIZE because these arrays contain complex numbers (real + imaginary)
 static float micLeft_cmplx_input[2 * FFT_SIZE];
@@ -32,9 +31,9 @@ static int stop;
 
 #define MIN_VALUE_THRESHOLD	10000 
 
-#define MIN_FREQ		35	//we don't analyze before this index to not use resources for nothing
-#define FREQ_FORWARD	45	//700Hz
-#define MAX_FREQ		55	//we don't analyze after this index to not use resources for nothing
+#define MIN_FREQ		56	//we don't analyze before this index to not use resources for nothing
+#define FREQ_FORWARD	66	//1000Hz
+#define MAX_FREQ		76	//we don't analyze after this index to not use resources for nothing
 
 #define FREQ_FORWARD_L		(FREQ_FORWARD-1)
 #define FREQ_FORWARD_H		(FREQ_FORWARD+1)
@@ -57,10 +56,10 @@ static THD_FUNCTION(Audio, arg) {
 
         if(stop){
         	stop_robot();
-        	//set_body_led(2);
+        	set_body_led(2);
         }
         //200Hz
-        chThdSleepUntilWindowed(time, time + MS2ST(5));
+        chThdSleepUntilWindowed(time, time + MS2ST(10));
 	}
 }
 
@@ -79,6 +78,8 @@ void sound_remote(float* data){
 			max_norm_index = i;
 		}
 	}
+
+	chprintf((BaseSequentialStream *)&SD3, "%4d,", max_norm_index);
 
 	// Stops the robot if it detect a certain frequency
 	if(max_norm_index >= FREQ_FORWARD_L && max_norm_index <= FREQ_FORWARD_H ){
@@ -156,5 +157,5 @@ int get_stop(void){
 }
 
 void audio_start(void){
-	chThdCreateStatic(waAudio, sizeof(waAudio), NORMALPRIO+2, Audio, NULL);
+	chThdCreateStatic(waAudio, sizeof(waAudio), NORMALPRIO+1, Audio, NULL);
 }

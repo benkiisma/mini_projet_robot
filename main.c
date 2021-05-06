@@ -21,8 +21,7 @@
 #include <main.h>
 #include <audio_processing.h>
 #include <fft.h>
-#include <detection.h>
-#include <mouvement.h>
+#include <robot_control.h>
 
 messagebus_t bus;
 MUTEX_DECL(bus_lock);
@@ -56,11 +55,9 @@ int main(void)
     motors_init();
     //starts the proximity sensor
     proximity_start();
-    //starts the detection of obstacles
-    detection_start();
-    // starts the movement of the robot
-    mouvement_start();
-    // starts the detection of the sound
+    //starts detection and movement
+    movement_start();
+    //starts detection of the audio
     audio_start();
 
     /* Infinite loop. */
