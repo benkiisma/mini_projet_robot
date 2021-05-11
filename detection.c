@@ -18,10 +18,10 @@ static int robot_state;
 //Changing the state of the robot depending on the sensor values
 void define_robot_state(void){
 	if(!get_stop()){
-		if(get_calibrated_prox(0) < DETECT_DIST && get_calibrated_prox(7) < DETECT_DIST){
+		if(get_calibrated_prox(0) < DETECT_DIST_FRONT && get_calibrated_prox(7) < DETECT_DIST_FRONT){
 			robot_state = 0;
 		}
-		else if(get_calibrated_prox(0) > DETECT_DIST && get_calibrated_prox(7) > DETECT_DIST){
+		else if(get_calibrated_prox(0) > DETECT_DIST_FRONT && get_calibrated_prox(7) > DETECT_DIST_FRONT){
 			if(get_calibrated_prox(2) > DETECT_DIST && get_calibrated_prox(5) < DETECT_DIST){
 				robot_state = 1;
 			}

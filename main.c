@@ -2,7 +2,9 @@
  * main.c
  *
  *  Created on: 18 avr. 2021S
+ *  We used a part of the TP5 code
  *      Author: Nicolas & Ismail
+ *
  */
 
 #include <stdio.h>
@@ -26,18 +28,6 @@ messagebus_t bus;
 MUTEX_DECL(bus_lock);
 CONDVAR_DECL(bus_condvar);
 
-static void serial_start(void)
-{
-	static SerialConfig ser_cfg = {
-	    115200,
-	    0,
-	    0,
-	    0,
-	};
-
-	sdStart(&SD3, &ser_cfg); // UART3.
-}
-
 int main(void)
 {
 
@@ -47,7 +37,6 @@ int main(void)
 
     messagebus_init(&bus, &bus_lock, &bus_condvar);
 
-    serial_start();
     //starts the USB communication
     usb_start();
     //inits the motors

@@ -18,7 +18,8 @@
 #define ERROR_THRESHOLD				10
 #define KP							0.2f
 #define MOTOR_SPEED					600
-#define RATIO_DIAG					1 //1.9f en float
+#define RATIO_DIAG_L				1.3f
+#define RATIO_DIAG_H				2.5f
 
 void read_and_move(void){
 	switch(get_robot_state()){
@@ -61,27 +62,24 @@ int16_t p_regulator(int16_t distance, int16_t goal){
 
 void path_correction(void){
 
-	int16_t ratio; //we take the ratio between diagonal values of the sensors
+	float ratio; //we take the ratio between diagonal values of the sensors
 	int16_t distance_side;
 	int16_t speed_correction;
 
 	//we put a reference on the right side, if the wall is too far we take the left side
 	distance_side = get_calibrated_prox(2);
-	ratio = get_calibrated_prox(1)/get_calibrated_prox(3);
+	ratio = (float)get_calibrated_prox(1)/get_calibrated_prox(3);
 
-	if(get_calibrated_prox(2) < 150){
+	if(get_calibrated_prox(2) < DETECT_DIST){
 		distance_side = get_calibrated_prox(5);
-		ratio = get_calibrated_prox(6)/get_calibrated_prox(4);
+		ratio = (float)get_calibrated_prox(6)/get_calibrated_prox(4);
 	}
-
-//	int16_t ratio_g = get_calibrated_prox(6)/get_calibrated_prox(4);
-//	int16_t ratio_d = get_calibrated_prox(1)/get_calibrated_prox(3);
 
 	//determining the necessary correction
 	if(get_calibrated_prox(2) > DETECT_DIST && get_calibrated_prox(5) > DETECT_DIST){
 		speed_correction = p_regulator(distance_side, (get_calibrated_prox(2) + get_calibrated_prox(5))/2);
 		//if the robot is parallel to the wall, we don't correct
-		if(ratio == 1){
+		if(ratio >= RATIO_DIAG_L && ratio <= RATIO_DIAG_H){
 			speed_correction = 0;
 		}
 	}else{

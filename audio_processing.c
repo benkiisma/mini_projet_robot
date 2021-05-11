@@ -86,11 +86,12 @@ void sound_remote(float* data){
 	}
 
 	// Stops the robot if it detects 1000Hz
-	if(max_norm_index >= FREQ_STOP_L && max_norm_index <= FREQ_STOP_H ){
+	if(max_norm_index >= FREQ_STOP_L && max_norm_index <= FREQ_STOP_H){
 		stop = 1;
 	}
 	else{
 		stop = 0;
+		set_body_led(0); //If the robot moves we don't want any light
 	}
 }
 

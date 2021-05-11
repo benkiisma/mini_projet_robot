@@ -9,7 +9,8 @@
 #define DETECTION_H_
 
 //Constant definition
-#define DETECT_DIST 	150
+#define DETECT_DIST 		150
+#define DETECT_DIST_FRONT 	200
 
 void define_robot_state(void);
 
