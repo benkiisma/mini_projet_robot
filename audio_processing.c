@@ -11,14 +11,11 @@
 #include <main.h>
 
 #include <audio/microphone.h>
-#include <audio_processing.h>
 #include <arm_math.h>
+#include <arm_const_structs.h>
 #include <leds.h>
 
-#include <usbcfg.h>
-#include <chprintf.h>
-
-#include <fft.h>
+#include <audio_processing.h>
 #include <detection.h>
 
 //2 times FFT_SIZE because these arrays contain complex numbers (real + imaginary)
@@ -27,16 +24,20 @@ static float micLeft_cmplx_input[2 * FFT_SIZE];
 //Arrays containing the computed magnitude of the complex numbers
 static float micLeft_output[FFT_SIZE];
 
+//Variable changed by the detection of 1000Hz
 static int stop;
 
+
+//Constants definition
 #define MIN_VALUE_THRESHOLD	10000 
 
 #define MIN_FREQ		56	//we don't analyze before this index to not use resources for nothing
-#define FREQ_FORWARD	66	//1000Hz
+#define FREQ_STOP		66	//1000Hz
 #define MAX_FREQ		76	//we don't analyze after this index to not use resources for nothing
 
-#define FREQ_FORWARD_L		(FREQ_FORWARD-1)
-#define FREQ_FORWARD_H		(FREQ_FORWARD+1)
+#define FREQ_STOP_L		(FREQ_STOP-1)
+#define FREQ_STOP_H		(FREQ_STOP+1)
+
 
 static THD_WORKING_AREA(waAudio, 256);
 static THD_FUNCTION(Audio, arg) {
@@ -46,32 +47,37 @@ static THD_FUNCTION(Audio, arg) {
 
 	systime_t time;
 
-    //starts the microphones processing thread.
-    //it calls the callback given in parameter when samples are ready
+    //Starts the microphones processing thread.
     mic_start(&processAudioData);
 
 	while(1){
 
 		time = chVTGetSystemTime();
 
+		//If we detect 1000Hz, robot stops and body_led blinks
         if(stop){
         	stop_robot();
         	set_body_led(2);
         }
-        //200Hz
-        chThdSleepUntilWindowed(time, time + MS2ST(10));
+        //50Hz
+        chThdSleepUntilWindowed(time, time + MS2ST(50));
 	}
 }
 
-/*
-*	Simple function used to detect the highest value in a buffer
-*	and to execute a motor command depending on it
-*/
+
+//Wrapper to call a very optimized fft function provided by ARM
+void FFT_optimized(uint16_t size, float* complex_buffer){
+	if(size == 1024)
+		arm_cfft_f32(&arm_cfft_sR_f32_len1024, complex_buffer, 0, 1);
+}
+
+
+//Simple function used to detect the highest value in a buffer
 void sound_remote(float* data){
 	float max_norm = MIN_VALUE_THRESHOLD;
 	int16_t max_norm_index = -1; 
 
-	//search for the highest peak
+	//Search for the highest peak
 	for(uint16_t i = MIN_FREQ ; i <= MAX_FREQ ; i++){
 		if(data[i] > max_norm){
 			max_norm = data[i];
@@ -79,10 +85,8 @@ void sound_remote(float* data){
 		}
 	}
 
-	chprintf((BaseSequentialStream *)&SD3, "%4d,", max_norm_index);
-
-	// Stops the robot if it detect a certain frequency
-	if(max_norm_index >= FREQ_FORWARD_L && max_norm_index <= FREQ_FORWARD_H ){
+	// Stops the robot if it detects 1000Hz
+	if(max_norm_index >= FREQ_STOP_L && max_norm_index <= FREQ_STOP_H ){
 		stop = 1;
 	}
 	else{
@@ -92,7 +96,7 @@ void sound_remote(float* data){
 
 /*
 *	Callback called when the demodulation of the four microphones is done.
-*	We get 160 samples per mic every 10ms (16kHz)
+*	We get 160 samples every 10ms (16kHz)
 *	
 *	params :
 *	int16_t *data			Buffer containing 4 times 160 samples. the samples are sorted by micro
@@ -152,10 +156,12 @@ void processAudioData(int16_t *data, uint16_t num_samples){
 	}
 }
 
+//Send the value stop to detection.c
 int get_stop(void){
 	return stop;
 }
 
+//Starts the audio thread
 void audio_start(void){
 	chThdCreateStatic(waAudio, sizeof(waAudio), NORMALPRIO+1, Audio, NULL);
 }

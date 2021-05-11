@@ -20,7 +20,6 @@
 
 #include <main.h>
 #include <audio_processing.h>
-#include <fft.h>
 #include <robot_control.h>
 
 messagebus_t bus;

@@ -12,7 +12,6 @@ int16_t p_regulator(int16_t distance, int16_t goal);
 
 void read_and_move(void);
 
-//void mouvement_start(void);
 void path_correction(void);
 
 void turn_right(void);
