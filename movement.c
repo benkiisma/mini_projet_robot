@@ -42,7 +42,13 @@ void read_and_move(void){
 	}
 }
 
-//P regulator implementation
+/*P regulator implementation
+ *
+ * We chose three variable in int16_t instead of float because we use values from proximity sensor
+ * that work with unsigned int as well as motor for the speed.
+ *
+ * We took 16 bits because the values can't reach 2^16 = 65'536 and not less to avoid overflow
+ */
 int16_t p_regulator(int16_t distance, int16_t goal){
 
 	int16_t error = 0;
@@ -50,7 +56,7 @@ int16_t p_regulator(int16_t distance, int16_t goal){
 
 	error = distance - goal;
 
-	//disables the P regulator if the error is to small
+	//disables the P regulator if the error is too small
 	if(abs(error) < ERROR_THRESHOLD){
 		return 0;
 	}
@@ -62,9 +68,9 @@ int16_t p_regulator(int16_t distance, int16_t goal){
 
 void path_correction(void){
 
-	float ratio; //we take the ratio between diagonal values of the sensors
+	float ratio; //we take the ratio between diagonal values of the sensors, need to be a float
 	int16_t distance_side;
-	int16_t speed_correction;
+	int16_t speed_correction; // here again we have int16_t because we deal with proximity values
 
 	//we put a reference on the right side. If the wall is too far, we take the left side
 	distance_side = get_calibrated_prox(2);
