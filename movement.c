@@ -66,7 +66,7 @@ void path_correction(void){
 	int16_t distance_side;
 	int16_t speed_correction;
 
-	//we put a reference on the right side, if the wall is too far we take the left side
+	//we put a reference on the right side. If the wall is too far, we take the left side
 	distance_side = get_calibrated_prox(2);
 	ratio = (float)get_calibrated_prox(1)/get_calibrated_prox(3);
 

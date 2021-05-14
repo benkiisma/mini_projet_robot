@@ -5,8 +5,6 @@
  *      Author: Nicolas & Ismail
  */
 
-#include <main.h>
-
 #include <sensors/proximity.h>
 
 #include <detection.h>

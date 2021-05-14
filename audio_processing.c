@@ -11,7 +11,6 @@
 #include <main.h>
 
 #include <audio/microphone.h>
-#include <arm_math.h>
 #include <arm_const_structs.h>
 #include <leds.h>
 
@@ -38,7 +37,7 @@ static int stop;
 #define FREQ_STOP_L		(FREQ_STOP-1)
 #define FREQ_STOP_H		(FREQ_STOP+1)
 
-
+//Thread declaration
 static THD_WORKING_AREA(waAudio, 256);
 static THD_FUNCTION(Audio, arg) {
 
@@ -106,14 +105,6 @@ void sound_remote(float* data){
 */
 void processAudioData(int16_t *data, uint16_t num_samples){
 
-	/*
-	*
-	*	We get 160 samples per mic every 10ms
-	*	So we fill the samples buffers to reach
-	*	1024 samples, then we compute the FFTs.
-	*
-	*/
-
 	static uint16_t nb_samples = 0;
 
 	//loop to fill the buffers
@@ -134,21 +125,11 @@ void processAudioData(int16_t *data, uint16_t num_samples){
 	}
 
 	if(nb_samples >= (2 * FFT_SIZE)){
-		/*	FFT proccessing
-		*
-		*	This FFT function stores the results in the input buffer given.
-		*	This is an "In Place" function. 
-		*/
 
+		//	FFT proccessing
 		FFT_optimized(FFT_SIZE, micLeft_cmplx_input);
 
-		/*	Magnitude processing
-		*
-		*	Computes the magnitude of the complex numbers and
-		*	stores them in a buffer of FFT_SIZE because it only contains
-		*	real numbers.
-		*
-		*/
+		//	Magnitude processing
 		arm_cmplx_mag_f32(micLeft_cmplx_input, micLeft_output, FFT_SIZE);
 
 		nb_samples = 0;
@@ -157,7 +138,7 @@ void processAudioData(int16_t *data, uint16_t num_samples){
 	}
 }
 
-//Send the value stop to detection.c
+//Send the value of stop to detection.c
 int get_stop(void){
 	return stop;
 }
