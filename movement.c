@@ -8,6 +8,8 @@
 
 #include <main.h>
 
+#include <stdlib.h>
+
 #include <sensors/proximity.h>
 #include <motors.h>
 
