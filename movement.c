@@ -112,7 +112,7 @@ void turn_left(void){
 void turn_back(void){
 	left_motor_set_speed(MOTOR_SPEED);
 	right_motor_set_speed(-MOTOR_SPEED);
-	chThdSleepMilliseconds(1050); //Wait until ~180° rotation
+	chThdSleepMilliseconds(1060); //Wait until ~180° rotation
 }
 
 void stop_moving(void){
