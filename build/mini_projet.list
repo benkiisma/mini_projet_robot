@@ -3287,7 +3287,7 @@ Disassembly of section .text:
  80026aa:	6823      	ldr	r3, [r4, #0]
  80026ac:	429a      	cmp	r2, r3
  80026ae:	d106      	bne.n	80026be <turn_back+0x2e>
- 80026b0:	f240 4024 	movw	r0, #1060	; 0x424
+
  80026b4:	b002      	add	sp, #8
  80026b6:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
  80026ba:	f002 bcf1 	b.w	80050a0 <chThdSleep>
