@@ -2848,7 +2848,7 @@ Disassembly of section .text:
  80021f8:	4648      	mov	r0, r9
  80021fa:	f002 f979 	bl	80044f0 <chSysHalt>
  80021fe:	f386 8811 	msr	BASEPRI, r6
- 8002202:	f8d8 3000 	ldr.w	r3, [r8]
+ 8002202:	f898 3000 	ldrb.w	r3, [r8]
  8002206:	2b00      	cmp	r3, #0
  8002208:	d0de      	beq.n	80021c8 <Audio+0x28>
  800220a:	f000 fb29 	bl	8002860 <stop_robot>
@@ -2860,7 +2860,7 @@ Disassembly of section .text:
  800221c:	20000b00 	.word	0x20000b00
  8002220:	08011340 	.word	0x08011340
  8002224:	080022b1 	.word	0x080022b1
- 8002228:	20004594 	.word	0x20004594
+ 8002228:	20004592 	.word	0x20004592
  800222c:	08011350 	.word	0x08011350
 
 08002230 <sound_remote>:
@@ -2892,7 +2892,7 @@ Disassembly of section .text:
  8002270:	480c      	ldr	r0, [pc, #48]	; (80022a4 <sound_remote+0x74>)
  8002272:	2101      	movs	r1, #1
  8002274:	429a      	cmp	r2, r3
- 8002276:	6001      	str	r1, [r0, #0]
+ 8002276:	7001      	strb	r1, [r0, #0]
  8002278:	d10d      	bne.n	8002296 <sound_remote+0x66>
  800227a:	b002      	add	sp, #8
  800227c:	bd10      	pop	{r4, pc}
@@ -2901,7 +2901,7 @@ Disassembly of section .text:
  8002282:	4c08      	ldr	r4, [pc, #32]	; (80022a4 <sound_remote+0x74>)
  8002284:	2000      	movs	r0, #0
  8002286:	429a      	cmp	r2, r3
- 8002288:	6020      	str	r0, [r4, #0]
+ 8002288:	7020      	strb	r0, [r4, #0]
  800228a:	d104      	bne.n	8002296 <sound_remote+0x66>
  800228c:	b002      	add	sp, #8
  800228e:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
@@ -2910,7 +2910,7 @@ Disassembly of section .text:
  800229a:	bf00      	nop
  800229c:	20000b00 	.word	0x20000b00
  80022a0:	461c4000 	.word	0x461c4000
- 80022a4:	20004594 	.word	0x20004594
+ 80022a4:	20004592 	.word	0x20004592
 	...
 
 080022b0 <processAudioData>:
@@ -3005,7 +3005,7 @@ Disassembly of section .text:
  80023a2:	4b07      	ldr	r3, [pc, #28]	; (80023c0 <get_stop+0x20>)
  80023a4:	4907      	ldr	r1, [pc, #28]	; (80023c4 <get_stop+0x24>)
  80023a6:	681a      	ldr	r2, [r3, #0]
- 80023a8:	6808      	ldr	r0, [r1, #0]
+ 80023a8:	7808      	ldrb	r0, [r1, #0]
  80023aa:	b083      	sub	sp, #12
  80023ac:	9201      	str	r2, [sp, #4]
  80023ae:	9a01      	ldr	r2, [sp, #4]
@@ -3016,7 +3016,7 @@ Disassembly of section .text:
  80023b8:	f85d fb04 	ldr.w	pc, [sp], #4
  80023bc:	f7ff fed8 	bl	8002170 <__stack_chk_fail>
  80023c0:	20000b00 	.word	0x20000b00
- 80023c4:	20004594 	.word	0x20004594
+ 80023c4:	20004592 	.word	0x20004592
 	...
 
 080023d0 <audio_start>:
@@ -3287,7 +3287,7 @@ Disassembly of section .text:
  80026aa:	6823      	ldr	r3, [r4, #0]
  80026ac:	429a      	cmp	r2, r3
  80026ae:	d106      	bne.n	80026be <turn_back+0x2e>
-
+ 80026b0:	f240 4024 	movw	r0, #1060	; 0x424
  80026b4:	b002      	add	sp, #8
  80026b6:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
  80026ba:	f002 bcf1 	b.w	80050a0 <chThdSleep>

@@ -10,6 +10,8 @@
 #include "hal.h"
 #include <main.h>
 
+#include <stdbool.h>
+
 #include <audio/microphone.h>
 #include <arm_const_structs.h>
 #include <leds.h>
@@ -24,7 +26,7 @@ static float micLeft_cmplx_input[2 * FFT_SIZE];
 static float micLeft_output[FFT_SIZE];
 
 //Variable changed by the detection of 1000Hz
-static int stop;
+static bool stop;
 
 
 //Constants definition
@@ -58,7 +60,7 @@ static THD_FUNCTION(Audio, arg) {
         	stop_robot();
         	set_body_led(2);
         }
-        //50Hz
+        //20Hz
         chThdSleepUntilWindowed(time, time + MS2ST(50));
 	}
 }
