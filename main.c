@@ -1,7 +1,7 @@
 /*
  * main.c
  *
- *  Created on: 18 avr. 2021S
+ *  Created on: 18 avr. 2021
  *  We used a part of the TP5 code
  *      Author: Nicolas & Ismail
  *

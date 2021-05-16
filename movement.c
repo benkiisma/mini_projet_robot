@@ -9,9 +9,8 @@
 #include <main.h>
 
 #include <stdlib.h>
-
-#include <sensors/proximity.h>
 #include <motors.h>
+#include <sensors/proximity.h>
 
 #include <detection.h>
 #include <movement.h>
@@ -46,8 +45,8 @@ void read_and_move(void){
 
 /*P regulator implementation
  *
- * We chose three variable in int16_t instead of float because we use values from proximity sensor
- * that work with unsigned int as well as motor for the speed.
+ * We chose three variables in int16_t instead of float because values from proximity sensor
+ * works with unsigned int as well as the motor's speed.
  *
  * We took 16 bits because the values can't reach 2^16 = 65'536 and not less to avoid overflow
  */

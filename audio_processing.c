@@ -31,11 +31,9 @@ static bool stop;
 
 //Constants definition
 #define MIN_VALUE_THRESHOLD	10000 
-
 #define MIN_FREQ		56	//we don't analyze before this index to not use resources for nothing
 #define FREQ_STOP		66	//1000Hz
 #define MAX_FREQ		76	//we don't analyze after this index to not use resources for nothing
-
 #define FREQ_STOP_L		(FREQ_STOP-1)
 #define FREQ_STOP_H		(FREQ_STOP+1)
 
@@ -55,7 +53,7 @@ static THD_FUNCTION(Audio, arg) {
 
 		time = chVTGetSystemTime();
 
-		//If we detect 1000Hz, robot stops and body_led blinks
+		//If we detect 1000Hz, the robot stops and the body_led blinks
         if(stop){
         	stop_robot();
         	set_body_led(2);
